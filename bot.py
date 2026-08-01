@@ -1,0 +1,1 @@
+print("PlanenNews Bot запущен!")
