@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = 8678805338:"AAFxrQBnfcGdPUmzWmgJxjqvP2a5K9NmcPA"
+TOKEN = "8678805338:AAFxrQBnfcGdPUmzWmgJxjqvP2a5K9NmcPA"
 
 8678805338:AAFxrQBnfcGdPUmzWmgJxjqvP2a5K9NmcPA
 
