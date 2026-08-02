@@ -1,7 +1,9 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "8678805338:AAG5_bHLCpfhIC90_E4Lu6YBLuIwctoczog"
+TOKEN = "8678805338:AAHjC5366jMLdy6FFI6QjzM_MyxmvnU2yXQ"
+
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("🚀 PlanenNews Bot работает!")
