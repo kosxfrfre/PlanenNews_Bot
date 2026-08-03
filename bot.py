@@ -1,8 +1,3 @@
-import os
-import logging
-import requests
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -10,57 +5,27 @@ from telegram.ext import (
     ContextTypes,
 )
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
-
 TOKEN = "8678805338:AAHPumjkRMOvkd81aPJ_H7kjiVJWi18V3Ac"
-CHANNEL = os.getenv("CHANNEL")
-NEWS_API_KEY = os.getenv("NEWS_API_KEY")
-ADMIN_ID = int(os.getenv("ADMIN_ID"))
+NEWS_API_KEY = "f6d056f516504ce1b83f405342ac1b50"
+CHANNEL = "@PlanenNews"
+ADMIN_ID = 8513038295
 
-LAST_NEWS = set()
 
-NEWS_URL = (
-    "https://newsapi.org/v2/top-headlines?"
-    "language=en&pageSize=5&apiKey="
-)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🚀 PlanenNews Bot работает!")
+    await update.message.reply_text(
+        "🚀 PlanenNews Bot работает!"
+    )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "/start - запуск\n"
         "/help - помощь\n"
-        "/news - получить последние новости\n"
-        "/post ТЕКСТ - опубликовать сообщение"
+        "/post ТЕКСТ - опубликовать новость"
     )
 
 
-async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = NEWS_URL + NEWS_API_KEY
-
-    try:
-        response = requests.get(url, timeout=15).json()
-
-        if response.get("status") != "ok":
-            await update.message.reply_text("❌ Не удалось получить новости.")
-            return
-
-        articles = response["articles"][:5]
-
-        text = "📰 Последние новости:\n\n"
-
-        for article in articles:
-            text += f"• {article['title']}\n{article['url']}\n\n"
-
-        await update.message.reply_text(text)
-
-    except Exception as e:
-        await update.message.reply_text(f"Ошибка: {e}")
-        async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ADMIN_ID:
         await update.message.reply_text("❌ Нет доступа.")
         return
@@ -78,36 +43,20 @@ async def news(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=text
     )
 
-    await update.message.reply_text("✅ Опубликовано!")
+    await update.message.reply_text("✅ Новость опубликована!")
 
 
-async def auto_news(context: ContextTypes.DEFAULT_TYPE):
-    url = NEWS_URL + NEWS_API_KEY
+def main():
+    app = ApplicationBuilder().token(TOKEN).build()
 
-    try:
-        response = requests.get(url, timeout=20).json()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("post", post))
 
-        if response.get("status") != "ok":
-            return
+    print("Bot started")
 
-        article = response["articles"][0]
+    app.run_polling()
 
-        if article["url"] in LAST_NEWS:
-            return
 
-        LAST_NEWS.add(article["url"])
-
-        text = (
-            f"📰 {article['title']}\n\n"
-            f"{article.get('description') or ''}\n\n"
-            f"🔗 {article['url']}"
-        )
-
-        await context.bot.send_message(
-            chat_id=CHANNEL,
-            text=text,
-            disable_web_page_preview=False,
-        )
-
-    except Exception as e:
-        logging.error(e)
+if __name__ == "__main__":
+    main()
