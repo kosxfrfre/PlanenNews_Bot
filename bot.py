@@ -1,3 +1,8 @@
+import os
+import logging
+import requests
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 from telegram import Update
 from telegram.ext import (
     ApplicationBuilder,
@@ -5,58 +10,19 @@ from telegram.ext import (
     ContextTypes,
 )
 
-TOKEN = "8678805338:AAHPumjkRMOvkd81aPJ_H7kjiVJWi18V3Ac"
-NEWS_API_KEY = "f6d056f516504ce1b83f405342ac1b50"
-CHANNEL = "@PlanenNews"
-ADMIN_ID = 8513038295
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
+TOKEN = os.getenv("TOKEN")
+CHANNEL = os.getenv("CHANNEL")
+NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+ADMIN_ID = int(os.getenv("ADMIN_ID"))
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 PlanenNews Bot работает!"
-    )
+LAST_NEWS = set()
 
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "/start - запуск\n"
-        "/help - помощь\n"
-        "/post ТЕКСТ - опубликовать новость"
-    )
-
-
-async def post(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        await update.message.reply_text("❌ Нет доступа.")
-        return
-
-    text = " ".join(context.args)
-
-    if not text:
-        await update.message.reply_text(
-            "Используй:\n/post Текст новости"
-        )
-        return
-
-    await context.bot.send_message(
-        chat_id=CHANNEL,
-        text=text
-    )
-
-    await update.message.reply_text("✅ Новость опубликована!")
-
-
-def main():
-    app = ApplicationBuilder().token(TOKEN).build()
-
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("post", post))
-
-    print("Bot started")
-
-    app.run_polling()
-
-
-if __name__ == "__main__":
-    main()
+NEWS_URL = (
+    "https://newsapi.org/v2/top-headlines?"
+    "language=en&pageSize=5&apiKey="
+)
