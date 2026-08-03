@@ -8,7 +8,7 @@ from telegram.ext import (
 TOKEN = "8678805338:AAHPumjkRMOvkd81aPJ_H7kjiVJWi18V3Ac"
 
 CHANNEL = "@PlanenNews"
-ADMIN_ID = YOUR_TELEGRAM_ID
+ADMIN_ID = 8513038295
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
